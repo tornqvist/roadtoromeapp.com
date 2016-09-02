@@ -7,17 +7,12 @@
   <link href="main.css" rel="stylesheet">
   <script>
     (function (global) {
-      var error;
-
       var timeout = setTimeout(function () {
-        if (error) {
-          global.document.documentElement.classList.remove('has-js');
-        }
+        global.document.documentElement.classList.remove('has-js');
       }, 2500);
 
       global.document.documentElement.classList.add('has-js');
-      window.addEventListener('error', function (err) { error = err; }, false);
-      window.addEventListener('app.load', function () { clearTimeout(timeout); }, false);
+      window.addEventListener('app.initialized', function () { clearTimeout(timeout); }, false);
     }(this));
   </script>
 </head>
@@ -36,7 +31,7 @@
 
           <div class="Grid-cell u-flexOrderLast u-size1of1 u-md-size1of2 u-lg-size1of2 u-flex u-flexCol">
             <div class="u-sizeFill u-flex u-flexCol u-flexJustifyCenter">
-              
+
               <header class="Header" id="header">
                 <h1 class="u-hiddenVisually">Road to Rome</h1>
                 <svg class="Header-logo" width="420px" height="49px" viewBox="0 0 420 49" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -184,6 +179,9 @@
 
   <!-- <script type="text/javascript" src="http://l2.io/ip.js?var=CLIENT_IP"></script> -->
   <script src="main.js"></script>
+  <script>
+    (function () { window.dispatchEvent(new Event('app.initialized')); }());
+  </script>
 </body>
 
 </html>
