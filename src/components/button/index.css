@@ -1,0 +1,27 @@
+@import "suitcss-components-button";
+
+:root {
+  --Button-border-width: 0;
+  --Button-color: #fff;
+  --Button-background: #63BEF5;
+  --Button-disabled-opacity: 0.75;
+}
+
+.Button:disabled {
+  cursor: not-allowed;
+}
+
+.Button {
+  background: var(--Button-background);
+}
+
+.Button--lg {
+  display: block;
+  width: 100%;
+  padding: 1em 1em;
+  font-size: calc(24em/16);
+}
+
+.Button--outlined {
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.1);
+}

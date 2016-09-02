@@ -1,0 +1,36 @@
+/* @define App */
+
+.App {
+  background: #fff;
+  font-family: "HelveticaNeueThin", "HelveticaNeue-Thin", "Helvetica Neue Thin", "HelveticaNeue", "Helvetica Neue", 'TeXGyreHerosRegular', "Arial", sans-serif;
+  font-weight: 200;
+  font-stretch: normal;
+  line-height: calc(24em/16);
+}
+
+.App-hero {
+  display: flex;
+  align-items: center;
+  align-content: center;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.App-container {
+  width: 100%;
+  padding: 0 2.5vw;
+  position: relative;
+}
+
+@media (--lg-viewport) {
+  .App-container {
+    padding: 0;
+    max-width: var(--lg-viewport);
+    margin: 0 auto;
+  }
+}
+
+.App-text p:not(:last-child) {
+  margin-bottom: 1em;
+}

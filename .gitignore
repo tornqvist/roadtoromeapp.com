@@ -1,0 +1,10 @@
+# Libraries
+node_modules
+
+# Build files
+public/**
+!public/*.html
+!public/*.jpg
+
+# Private resource
+.env

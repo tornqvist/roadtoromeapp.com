@@ -1,0 +1,17 @@
+/* @define utilities */
+
+@import "suitcss-utils-flex";
+@import "suitcss-utils-display";
+@import "suitcss-utils-layout";
+@import "suitcss-utils-position";
+@import "suitcss-utils-space";
+@import "suitcss-utils-size";
+@import "suitcss-utils-text";
+
+.u-zBump {
+  z-index: 1 !important;
+}
+
+.u-zDump {
+  z-index: -1 !important;
+}

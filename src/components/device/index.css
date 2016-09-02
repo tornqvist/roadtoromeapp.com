@@ -1,0 +1,17 @@
+/* @define Device */
+
+.Device {
+  display: inline-block;
+  max-height: 150vw;
+  max-width: 100%;
+  width: auto;
+
+  transition:
+    transform 600ms ease-out,
+    opacity 600ms ease-out;
+}
+
+.Device.is-hidden {
+  opacity: 0;
+  transform: translateY(100%);
+}

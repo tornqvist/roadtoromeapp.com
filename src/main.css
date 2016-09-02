@@ -1,0 +1,24 @@
+@import "suitcss-base";
+
+@import "./components/app";
+@import "./components/button";
+@import "./components/device";
+@import "./components/form";
+@import "./components/grid";
+@import "./components/header";
+@import "./components/map";
+@import "./components/utils";
+
+:root {
+  --sm-viewport: 320px;
+  --md-viewport: 640px;
+  --lg-viewport: 1400px;
+}
+
+@custom-media --sm-viewport (min-width:320px) and (max-width:640px);
+@custom-media --md-viewport (min-width:640px) and (max-width:1400px);
+@custom-media --lg-viewport (min-width:1400px);
+
+html, body {
+  height: 100%;
+}

@@ -1,0 +1,52 @@
+/* @define Header */
+
+.Header {
+  margin-bottom: var(--space-l);
+}
+
+.Header.is-fixed {
+  width: 100%;
+  padding: 0 2.5vw;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+
+  background: rgba(245, 238, 90, 0.65);
+  -webkit-backdrop-filter: blur(6px);
+  -moz-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+@media (--lg-viewport) {
+  .Header.is-fixed {
+    padding: 0 calc((100vw - var(--lg-viewport)) / 2);
+  }
+}
+
+.Header.is-fixed .Header-logo {
+  float: right;
+  height: 35px;
+  width: auto;
+  margin: 10px 0;
+  padding: 0;
+}
+
+.Header.is-fixed .Header-preamble {
+  display: none;
+}
+
+.Header-logo {
+  max-width: 100%;
+  height: auto;
+  padding-right: 1em;
+}
+
+.Header-preamble {
+  max-width: 420px;
+  margin: 1em 0;
+  font-size: calc(26em/16);
+  line-height: calc(34em/26);
+  -webkit-font-smoothing: antialiased;
+}
