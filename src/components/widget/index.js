@@ -1,4 +1,3 @@
-import yo from 'yo-yo';
 import { input, range } from '../form';
 import { identifier, output, uid } from '../utils';
 import {
@@ -8,6 +7,11 @@ import {
   findWaypoint,
   setDefaultWaypoints
 } from './actions';
+
+/**
+ * Babel transform `yo` into a unrecognizable mess, hence the CommonJS
+ */
+const yo = require('yo-yo');
 
 const BUTTON_IDENTIFIER = identifier('.js-submit');
 const FROM_IDENTIFIER = identifier('[name="from"]');

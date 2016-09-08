@@ -1,7 +1,11 @@
-import yo from 'yo-yo';
 import mapboxgl from 'mapbox-gl';
 import geojsonExtent from 'geojson-extent';
 import { uid, debounce } from '../utils';
+
+/**
+ * Babel transform `yo` into a unrecognizable mess, hence the CommonJS
+ */
+const yo = require('yo-yo');
 
 mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN;
 

@@ -1,12 +1,16 @@
-import yo from 'yo-yo';
 import { uid } from '../utils';
+
+/**
+ * Babel transform `yo` into a unrecognizable mess, hence the CommonJS
+ */
+const yo = require('yo-yo');
 
 let template;
 
 export function createView() {
   let isFixed = false;
   const id = uid();
-  
+
   return state => {
     const element = template();
 

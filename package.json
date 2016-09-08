@@ -4,7 +4,7 @@
   "description": "Promotional website for the mobile application Road To Rome",
   "scripts": {
     "test": "eslint ./ --ignore-pattern node_modules --ignore-pattern public",
-    "build:js": "source .env && browserify src/main.js -t babelify -t yo-yoify -t envify > public/main.js",
+    "build:js": "source .env && browserify src/main.js -t babelify -t yo-yoify -t [ babelify --plugins [ transform-es2015-template-literals ] ] -t envify > public/main.js",
     "build:css": "postcss -u postcss-import -u postcss-custom-media src/main.css --map --output public/main.css",
     "build": "npm run build:js & npm run build:css",
     "compress:js": "cat public/main.js | uglifyjs | gzip -9 -c > public/main.js.gz",

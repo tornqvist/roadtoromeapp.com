@@ -1,4 +1,8 @@
-import { default as yo, createElement } from 'yo-yo';
+/**
+ * Babel transform `yo` into a unrecognizable mess, hence the CommonJS
+ */
+const yo = require('yo-yo');
+const { createElement } = yo;
 
 let id = 0;
 const uid = () => id += 1;
