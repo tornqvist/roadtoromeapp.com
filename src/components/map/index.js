@@ -10,11 +10,12 @@ const yo = require('yo-yo');
 mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 const id = uid();
-const BASE_OFFSET = -200;
+const BASE_OFFSET = -150;
 const THRESHOLD = 768;
 
 export function createView() {
   let map, container;
+  let onresize = () => {};
   const onload = route => node => {
     container = node;
     map = new mapboxgl.Map({
@@ -27,18 +28,17 @@ export function createView() {
 
     map.once('load', () => addRoute(route));
 
-    window.addEventListener('resize', debounce(() => {
-      map.fitBounds(map.getBounds(), getBoundsOptions());
-    }, 200));
+    window.addEventListener('resize', debounce(() => onresize(), 200));
   };
 
   function getBoundsOptions() {
     const width = window.innerWidth;
     const { offsetWidth, offsetHeight } = container;
     const offsetX = width > THRESHOLD ? BASE_OFFSET * (offsetWidth / THRESHOLD) : 0;
-    const padding = width > THRESHOLD ? 80 : 50;
+    const offsetY = width < THRESHOLD ? ((offsetHeight / 4) * -1) : 0;
+    const padding = width > THRESHOLD ? 80 : 40;
 
-    return { padding, offset: [ offsetX, 0 ] };
+    return { padding, offset: [ offsetX, offsetY ] };
   }
 
   function addRoute(route) {
@@ -48,12 +48,10 @@ export function createView() {
       geometry: { ...route.geometry }
     };
     const [ west, south, east, north ] = geojsonExtent(geojson);
+    const bounds = [[ west, south ], [ east, north ]];
 
     map.addSource(route.id, { type: 'geojson', data: geojson });
-    map.fitBounds(
-      [[ west, south ], [ east, north ]],
-      getBoundsOptions()
-    );
+    map.fitBounds(bounds, getBoundsOptions());
     map.addLayer({
       'id': route.id,
       'type': 'line',
@@ -68,6 +66,7 @@ export function createView() {
       }
     });
 
+    onresize = () => map.fitBounds(bounds, getBoundsOptions());
   }
 
   return (state, dispatch, previous) => {
