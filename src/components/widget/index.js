@@ -61,16 +61,12 @@ const appear = callback => node => {
 };
 
 export function createView() {
-  let dispatchClick;
-  const onclick = event => {
-    dispatchClick();
-    event.preventDefault();
-  };
   const id = uid();
 
   return ({ map }, dispatch) => {
     const { route, error, waypoints } = map;
 
+    let cansubmit = true;
     const outline = !!Object.keys(route).length;
     const itemClass = INPUT_IDENTIFIER.classes.join(' ');
     const steps = Math.round(route.distance / 0.45);
@@ -80,15 +76,33 @@ export function createView() {
     const onblur = ({ target }) => dispatch(
       findWaypoint(target.value, target.name, `[name="${ target.name }"]`)
     );
-    const onfocus = ({ target }) => target.select();
+    const onfocus = event => event.target.select();
     const onBaselineInput = event => dispatch(setBaseline(+event.target.value));
+    const onkeydown = event => {
+      if (event.keyCode === 13) {
+        const { target } = event;
+        const name = target.name;
 
-    dispatchClick = () => dispatch(
-      findRoute(waypoints.from, waypoints.to, BUTTON_IDENTIFIER.selector)
-    );
+        dispatch(findWaypoint(target.value, name, `[name="${ name }"]`))
+          .then(action => {
+            const args = [waypoints.from, waypoints.to];
+            args[name === 'from' ? 0 : 1] = action.waypoint;
+            return dispatch(findRoute(...args, BUTTON_IDENTIFIER.selector));
+          });
+      }
+    };
 
-    let cansubmit = true;
-    if (error || !waypoints.from || !waypoints.to) {
+    const onsubmit = event => {
+      dispatch(findRoute(
+        waypoints.from,
+        waypoints.to,
+        BUTTON_IDENTIFIER.selector
+      ));
+
+      event.preventDefault();
+    };
+
+    if (map.loading || error || !waypoints.from || !waypoints.to) {
       cansubmit = false;
     }
 
@@ -98,7 +112,6 @@ export function createView() {
       itemClass
     ].concat(BUTTON_IDENTIFIER.classes);
     if (BUTTON_IDENTIFIER.matches(map.loading)) {
-      cansubmit = false;
       buttonClasses.push('is-loading');
     }
     if (outline) {
@@ -127,15 +140,17 @@ export function createView() {
               </div>
             </div>
           `) }
-          <div class=${ itemClass }>
-            ${ input({outline, label: 'From', id: id('from'), error: (error && FROM_IDENTIFIER.matches(error.selector)), loading: FROM_IDENTIFIER.matches(map.loading), name: 'from', value: map.from, oninput, onblur, onfocus }) }
-          </div>
-          <div class=${ itemClass }>
-            ${ input({outline, label: 'To', id: id('to'), error: (error && TO_IDENTIFIER.matches(error.selector)), loading: TO_IDENTIFIER.matches(map.loading), name: 'to', value: map.to, oninput, onblur, onfocus }) }
-          </div>
-          <button type="submit" disabled=${ !cansubmit } class=${ buttonClasses.join(' ') } onclick=${ onclick }>
-            Get going
-          </button>
+          <form onsubmit=${ onsubmit }>
+            <div class=${ itemClass }>
+              ${ input({outline, label: 'From', id: id('from'), error: (error && FROM_IDENTIFIER.matches(error.selector)), loading: FROM_IDENTIFIER.matches(map.loading), name: 'from', value: map.from, oninput, onblur, onfocus, onkeydown }) }
+            </div>
+            <div class=${ itemClass }>
+              ${ input({outline, label: 'To', id: id('to'), error: (error && TO_IDENTIFIER.matches(error.selector)), loading: TO_IDENTIFIER.matches(map.loading), name: 'to', value: map.to, oninput, onblur, onfocus, onkeydown }) }
+            </div>
+            <button type="submit" disabled=${ !cansubmit } class=${ buttonClasses.join(' ') }>
+              Get going
+            </button>
+          </form>
         </div>
       </div>
     `;

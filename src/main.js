@@ -10,9 +10,9 @@ const middleware = [];
 
 middleware.push(store => next => action => {
   if (typeof action === 'function') {
-    action(store.dispatch, store.getState);
+    return action(store.dispatch, store.getState);
   } else {
-    next(action);
+    return next(action);
   }
 });
 
