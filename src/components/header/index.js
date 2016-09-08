@@ -2,10 +2,11 @@ import yo from 'yo-yo';
 import { uid } from '../utils';
 
 let template;
-let isFixed = false;
-const id = uid();
 
 export function createView() {
+  let isFixed = false;
+  const id = uid();
+  
   return state => {
     const element = template();
 
