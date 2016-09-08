@@ -1,6 +1,10 @@
+import { uid } from '../utils';
+
 let template;
 
 export function createView() {
+  const id = uid();
+
   return state => {
     const element = template();
 
@@ -8,6 +12,7 @@ export function createView() {
       return element;
     }
 
+    element.id = id('header');
     element.classList.add('is-hidden');
 
     return element;
