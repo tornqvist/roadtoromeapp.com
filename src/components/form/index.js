@@ -27,22 +27,6 @@ function extractAttrs(attrs, ...args) {
     attrs.id = `form-${ uid() }`;
   }
 
-  const onfocus = attrs.onfocus;
-  attrs.onfocus = event => {
-    if (!attrs.readonly) {
-      event.target.parentElement.classList.add('has-focus');
-    }
-    if (typeof onfocus === 'function') { onfocus(event); }
-  };
-
-  const onblur = attrs.onblur;
-  attrs.onblur = event => {
-    if (!attrs.readonly) {
-      event.target.parentElement.classList.remove('has-focus');
-    }
-    if (typeof onblur === 'function') { onblur(event); }
-  };
-
   return attrs;
 }
 
@@ -67,6 +51,22 @@ export function input(props) {
   if (props.outline) {
     classList.push('Form-item--outlined');
   }
+
+  const onfocus = attrs.onfocus;
+  attrs.onfocus = event => {
+    if (!attrs.readonly) {
+      event.target.parentElement.classList.add('has-focus');
+    }
+    if (typeof onfocus === 'function') { onfocus(event); }
+  };
+
+  const onblur = attrs.onblur;
+  attrs.onblur = event => {
+    if (!attrs.readonly) {
+      event.target.parentElement.classList.remove('has-focus');
+    }
+    if (typeof onblur === 'function') { onblur(event); }
+  };
 
   return yo`
     <div class=${ classList.join(' ') }>
