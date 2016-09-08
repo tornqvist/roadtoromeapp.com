@@ -110,3 +110,11 @@ export function uid(id) {
 
   return `${ key }-${ id }`;
 }
+
+export function debounce(callback, time = 100) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => callback(...args), time);
+  };
+}

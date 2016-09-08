@@ -1,17 +1,20 @@
 import yo from 'yo-yo';
 import mapboxgl from 'mapbox-gl';
 import geojsonExtent from 'geojson-extent';
-import { uid } from '../utils';
+import { uid, debounce } from '../utils';
 
 mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 const id = uid();
+const BASE_OFFSET = -200;
+const THRESHOLD = 768;
 
 export function createView() {
-  let map;
+  let map, container;
   const onload = route => node => {
+    container = node;
     map = new mapboxgl.Map({
-      container: node,
+      container,
       style: 'mapbox://styles/tornqvist/cirykn4yx0043gum6i942t6gz',
       interactive: false,
       center: [24.757, 45.169],
@@ -19,7 +22,20 @@ export function createView() {
     });
 
     map.once('load', () => addRoute(route));
+
+    window.addEventListener('resize', debounce(() => {
+      map.fitBounds(map.getBounds(), getBoundsOptions());
+    }, 200));
   };
+
+  function getBoundsOptions() {
+    const width = window.innerWidth;
+    const { offsetWidth, offsetHeight } = container;
+    const offsetX = width > THRESHOLD ? BASE_OFFSET * (offsetWidth / THRESHOLD) : 0;
+    const padding = width > THRESHOLD ? 80 : 50;
+
+    return { padding, offset: [ offsetX, 0 ] };
+  }
 
   function addRoute(route) {
     const geojson = {
@@ -32,7 +48,7 @@ export function createView() {
     map.addSource(route.id, { type: 'geojson', data: geojson });
     map.fitBounds(
       [[ west, south ], [ east, north ]],
-      { padding: 80, offset: [ -200, 0 ] }
+      getBoundsOptions()
     );
     map.addLayer({
       'id': route.id,
