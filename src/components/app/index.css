@@ -21,6 +21,7 @@
   width: 100%;
   padding: 0 2.5vw;
   position: relative;
+  overflow: hidden;
 }
 
 @media (--lg-viewport) {
