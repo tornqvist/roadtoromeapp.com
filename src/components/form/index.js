@@ -2,7 +2,7 @@ import { default as yo, createElement } from 'yo-yo';
 
 let id = 0;
 const uid = () => id += 1;
-const blacklist = ['label', 'loading', 'error', 'outline'];
+const blacklist = ['label', 'loading', 'error', 'outline', 'unit'];
 
 function extractAttrs(attrs, ...args) {
   attrs.className = attrs.className || '';
@@ -25,13 +25,17 @@ function extractAttrs(attrs, ...args) {
 
   const onfocus = attrs.onfocus;
   attrs.onfocus = event => {
-    event.target.parentElement.classList.add('has-focus');
+    if (!attrs.readonly) {
+      event.target.parentElement.classList.add('has-focus');
+    }
     if (typeof onfocus === 'function') { onfocus(event); }
   };
 
   const onblur = attrs.onblur;
   attrs.onblur = event => {
-    event.target.parentElement.classList.remove('has-focus');
+    if (!attrs.readonly) {
+      event.target.parentElement.classList.remove('has-focus');
+    }
     if (typeof onblur === 'function') { onblur(event); }
   };
 
@@ -73,18 +77,29 @@ export function range(props) {
   const attrs = extractAttrs({
     type: 'range',
     className: 'Form-range'
-  }, {
-    ...props,
-    onchange: ({ target }) => {
-
+  }, props, {
+    onchange: event => {
+      if (typeof props.onchange === 'function') {
+        props.onchange(event);
+      }
     }
   });
 
+  const classList = ['Form-item'];
+
+  if (props.error) {
+    classList.push('has-error');
+  }
+
+  if (props.outline) {
+    classList.push('Form-item--outlined');
+  }
+
   return yo`
-    <div class="Form-item">
-      <div class="u-flex"
-        <label class="Form-label u-flexExpand u-inlineBlock" for=${ attrs.id }>${ props.label }</label>
-        <input type="text" class="Form-text u-inlineBlock" readonly value="">
+    <div class=${ classList.join(' ') }>
+      <div class="u-flex">
+        <label class="Form-label u-sizeFill u-textNoWrap" for=${ attrs.id }>${ props.label }</label>
+        <input type="text" class="Form-text u-textRight u-sizeFit" readonly value=${ `${ props.value } ${ props.unit }` } />
       </div>
       ${ createElement('input', attrs) }
     </div>

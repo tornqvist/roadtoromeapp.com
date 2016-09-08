@@ -1,5 +1,5 @@
 import yo from 'yo-yo';
-import { input } from '../form';
+import { input, range } from '../form';
 import { identifier, output, uid } from '../utils';
 import {
   findRoute,
@@ -14,7 +14,6 @@ const FROM_IDENTIFIER = identifier('[name="from"]');
 const TO_IDENTIFIER = identifier('[name="to"]');
 const INPUT_IDENTIFIER = identifier('.js-formItem');
 const TRANSITION_EVENT = 'transitionend';
-const id = uid();
 
 const appear = callback => node => {
   requestAnimationFrame(() => {
@@ -67,6 +66,7 @@ export function createView() {
     dispatchClick();
     event.preventDefault();
   };
+  const id = uid();
 
   return ({ map }, dispatch) => {
     const { route, error, waypoints } = map;
@@ -123,7 +123,7 @@ export function createView() {
                 ${ input({outline, label: 'You\'ll be there in', id: id('estimate'), readonly: true, value: `${ Math.round(route.distance / (map.baseline * 5000)) } days` }) }
               </div>
               <div class=${ itemClass }>
-                ${ input({outline, label: 'Average time walking/day', id: id('baseline'), type: 'number', name: 'baseline', value: map.baseline, oninput: onBaselineInput }) }
+                ${ range({outline, label: 'Average time walking/day', id: id('baseline'), name: 'baseline', value: map.baseline, unit: 'h', min: 0.5, max: 24, step: 0.5, oninput: onBaselineInput }) }
               </div>
             </div>
           `) }
