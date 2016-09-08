@@ -102,7 +102,7 @@ export function range(props) {
   return yo`
     <div class=${ classList.join(' ') }>
       <div class="u-flex">
-        <label class="Form-label u-sizeFill u-textNoWrap" for=${ attrs.id }>${ props.label }</label>
+        <label class="Form-label u-textNoWrap" for=${ attrs.id }>${ props.label }</label>
         <input type="text" class="Form-text u-textRight u-sizeFit" readonly value=${ `${ props.value } ${ props.unit }` } />
       </div>
       ${ createElement('input', attrs) }
