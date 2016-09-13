@@ -26,13 +26,13 @@ const appear = callback => node => {
 
     Object.assign(node.style, { zIndex: '1', height: '0px' });
 
-    requestAnimationFrame(() => {
-      const ontransitionend = () => {
-        node.removeEventListener(TRANSITION_EVENT, ontransitionend);
-        node.removeAttribute('style');
-      };
+    const ontransitionend = () => {
+      node.removeEventListener(TRANSITION_EVENT, ontransitionend, false);
+      node.removeAttribute('style');
+    };
 
-      node.addEventListener(TRANSITION_EVENT, ontransitionend);
+    node.addEventListener(TRANSITION_EVENT, ontransitionend, false);
+    requestAnimationFrame(() => {
       Object.assign(node.style, {
         height: `${ height }px`,
         transition: `height ${ elements.length * 150 }ms ease-out`,
@@ -41,7 +41,7 @@ const appear = callback => node => {
 
     Array.prototype.forEach.call(elements, (el, index) => {
       const ontransitionend = () => {
-        el.removeEventListener(TRANSITION_EVENT, ontransitionend);
+        el.removeEventListener(TRANSITION_EVENT, ontransitionend, false);
         el.removeAttribute('style');
 
         if (typeof callback == 'function' && index === (elements.length - 1)) {
@@ -51,7 +51,7 @@ const appear = callback => node => {
 
       Object.assign(el.style, { opacity: '0', transform: 'translateY(50%)' });
 
-      el.addEventListener(TRANSITION_EVENT, ontransitionend);
+      el.addEventListener(TRANSITION_EVENT, ontransitionend, false);
       requestAnimationFrame(() => {
         Object.assign(el.style, {
           transition: `200ms linear ${ (index + 2) * 150 }ms`,
