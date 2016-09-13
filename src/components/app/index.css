@@ -32,6 +32,10 @@
   }
 }
 
+.App-text {
+  font-family: sans-serif;
+}
+
 .App-text p:not(:last-child) {
   margin-bottom: 1em;
 }
