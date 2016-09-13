@@ -91,45 +91,42 @@ export function setDefaultWaypoints(sender) {
     };
 
     return fetch(`//freegeoip.net/json/${ faux.EU/*window.CLIENT_IP*/ }`)
-      .then(resp => resp.json(), err => dispatch(error(err, sender)))
+      .then(resp => resp.json(), err => { /* noop */ })
       .then(data => {
+        if (!data || !data.country_code) {
+          return dispatch(inputWaypoint('', sender));
+        }
+
         const { latitude, longitude } = data;
+        const options = { types: 'region' };
         const continent = continents[data.country_code];
 
-        return client.geocodeReverse(
-          { longitude, latitude },
-          { types: 'region' }
-        )
-        .then(
-          resp => {
-            if (!resp.features.length) {
-              throw (new Error('No results found'));
-            }
+        return client.geocodeReverse({ longitude, latitude }, options)
+          .then(
+            resp => {
+              const waypoint = resp.features[0];
 
-            const waypoint = resp.features[0];
+              /**
+               * Set the default destination for the origin continent
+               */
 
-            /**
-             * Set the default destination for the origin continent
-             */
+              if (destinations[continent].length) {
+                const distance = getWaypointDistance(waypoint);
+                const destinationsByDistance = destinations[continent]
+                  .filter(destination => distance(destination) > 1000)
+                  .sort((a, b) => distance(a) < distance(b) ? 1 : -1);
 
-            if (destinations[continent].length) {
-              const distance = getWaypointDistance(waypoint);
-              const destinationsByDistance = destinations[continent]
-                .filter(destination => distance(destination) > 1000)
-                .sort((a, b) => distance(a) < distance(b) ? 1 : -1);
+                dispatch(setWaypoint(destinationsByDistance[0], 'to'));
+              }
 
-              dispatch(setWaypoint(destinationsByDistance[0], 'to'));
-            }
+              /**
+               * Set `from` waypoint
+               */
 
-            /**
-             * Set `from` waypoint
-             */
-
-            return dispatch(setWaypoint(waypoint, 'from'));
-          },
-          err => dispatch(error(err, sender))
-        )
-        .catch(err => dispatch(error(err, sender)));
+              return dispatch(setWaypoint(waypoint, 'from'));
+            },
+            err => { /* noop */ }
+          );
       });
   };
 }

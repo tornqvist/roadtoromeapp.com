@@ -16,8 +16,10 @@ export default function (state = {}, action) {
 
       return { ...state, error: error, loading: action.selector };
     }
-    case ACTIONS.INPUT_WAYPOINT:
-      return { ...state, [action.name]: action.text };
+    case ACTIONS.INPUT_WAYPOINT: {
+      const loading = state.loading === action.name ? null : state.loading;
+      return { ...state, loading, [action.name]: action.text };
+    }
     case ACTIONS.SET_WAYPOINT:
       return { ...state, loading: null,
         [action.name]: action.waypoint.place_name,
