@@ -118,3 +118,31 @@ export function debounce(callback, time = 100) {
     timeout = setTimeout(() => callback(...args), time);
   };
 }
+
+export function innerSVG(element) {
+  function get() {
+    const temp = document.createElement('div');
+    const node = element.cloneNode(true);
+
+    Array.prototype.forEach.call(node.children, child => {
+      temp.appendChild(child);
+    });
+
+    return temp.innerHTML;
+  }
+
+  function set(markup) {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+    }
+
+    const div = document.createElement('div');
+    div.innerHTML = `<svg xmlns='http://www.w3.org/2000/svg'>${ markup }</svg>`;
+
+    Array.prototype.forEach.call(div.firstChild.children, child => {
+      element.appendChild(child);
+    });
+  }
+
+  return { get, set };
+}

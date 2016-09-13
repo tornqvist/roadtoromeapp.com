@@ -147,13 +147,14 @@ export function createView() {
           <form onsubmit=${ onsubmit }>
             <div class=${ itemClass }>
               ${ input({outline, label: 'From', id: id('from'), error: (error && FROM_IDENTIFIER.matches(error.selector)), loading: FROM_IDENTIFIER.matches(map.loading), name: 'from', value: map.from, oninput, onblur, onfocus, onkeydown }) }
+            <div class=${ itemClass }>
             </div>
             <div class=${ itemClass }>
               ${ input({outline, label: 'To', id: id('to'), error: (error && TO_IDENTIFIER.matches(error.selector)), loading: TO_IDENTIFIER.matches(map.loading), name: 'to', value: map.to, oninput, onblur, onfocus, onkeydown }) }
+              <button type="submit" disabled=${ !cansubmit } class=${ buttonClasses.join(' ') }>
+                Get going
+              </button>
             </div>
-            <button type="submit" disabled=${ !cansubmit } class=${ buttonClasses.join(' ') }>
-              Get going
-            </button>
           </form>
         </div>
       </div>

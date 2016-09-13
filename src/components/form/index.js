@@ -1,3 +1,5 @@
+import { innerSVG } from '../utils';
+
 /**
  * Babel transform `yo` into a unrecognizable mess, hence the CommonJS
  */
@@ -40,8 +42,10 @@ export function input(props) {
   const classList = ['Form-item'];
 
   if (props.loading) {
+    attrs.disabled = true;
     classList.push('is-loading');
-    loader = yo`<svg class="Form-loader" role="presentational"><use width="50" height="50" namespace="http://www.w3.org/1999/xlink" href="#loader"></use></svg>`;
+    loader = yo`<svg class="Form-loader" width="50" height="50"></svg>`;
+    innerSVG(loader).set('<use xlink:href="#loader"></use>');
   }
 
   if (props.error) {
