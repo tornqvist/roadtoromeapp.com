@@ -34,7 +34,7 @@ export function findWaypoint(text, name, sender) {
       .then(
         resp => {
           if (!resp.features.length) {
-            throw (new Error('No results found'));
+            throw (new Error('Couldn\'t find location, try being more specific'));
           }
           return dispatch(setWaypoint(resp.features[0], name));
         },
@@ -62,7 +62,7 @@ export function findRoute(from, to, sender) {
     .then(
       resp => {
         if (!resp.routes.length) {
-          throw (new Error('Could not route!'));
+          throw (new Error('Couldn\'t find a route, try someplace else'));
         }
         return dispatch(setRoute(resp.routes[0]));
       },
