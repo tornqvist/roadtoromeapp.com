@@ -5,7 +5,8 @@ import {
   setBaseline,
   inputWaypoint,
   findWaypoint,
-  setDefaultWaypoints
+  setDefaultWaypoints,
+  error
 } from './actions';
 
 /**
@@ -68,7 +69,7 @@ export function createView() {
   const id = uid();
 
   return ({ map }, dispatch) => {
-    const { route, error, waypoints } = map;
+    const { route, waypoints } = map;
 
     let cansubmit = true;
     const outline = !!Object.keys(route).length;
@@ -77,22 +78,29 @@ export function createView() {
     const oninput = event => dispatch(
       inputWaypoint(event.target.value, event.target.name)
     );
-    const onblur = ({ target }) => dispatch(
-      findWaypoint(target.value, target.name, `[name="${ target.name }"]`)
-    );
+    const onblur = event => {
+      const sender = `[name="${ event.target.name }"]`;
+      dispatch(findWaypoint(event.target.value, event.target.name, sender))
+        .catch(err => dispatch(error(err, sender)));
+    };
     const onfocus = event => event.target.select();
     const onBaselineInput = event => dispatch(setBaseline(+event.target.value));
     const onkeydown = event => {
       if (event.keyCode === 13) {
         const { target } = event;
         const name = target.name;
+        const sender = `[name="${ name }"]`;
 
-        dispatch(findWaypoint(target.value, name, `[name="${ name }"]`))
-          .then(action => {
-            const args = [waypoints.from, waypoints.to];
-            args[name === 'from' ? 0 : 1] = action.waypoint;
-            return dispatch(findRoute(...args, BUTTON_IDENTIFIER.selector));
-          });
+        dispatch(findWaypoint(target.value, name, sender))
+          .then(
+            action => {
+              const args = [waypoints.from, waypoints.to];
+              args[name === 'from' ? 0 : 1] = action.waypoint;
+              return dispatch(findRoute(...args, BUTTON_IDENTIFIER.selector));
+            },
+            err => dispatch(error(err, sender))
+          )
+          .catch(err => dispatch(error(err, sender)));
       }
     };
 
@@ -101,20 +109,18 @@ export function createView() {
         waypoints.from,
         waypoints.to,
         BUTTON_IDENTIFIER.selector
-      ));
+      ))
+      .catch(err => dispatch(error(err, BUTTON_IDENTIFIER.selector)));
 
       event.preventDefault();
     };
 
-    if (map.loading || error || !waypoints.from || !waypoints.to) {
+    if (map.loading || map.error || !waypoints.from || !waypoints.to) {
       cansubmit = false;
     }
 
-    const buttonClasses = [
-      'Button',
-      'Button--lg',
-      itemClass
-    ].concat(BUTTON_IDENTIFIER.classes);
+    const buttonClasses = [ 'Button', 'Button--lg' ]
+      .concat(BUTTON_IDENTIFIER.classes);
     if (BUTTON_IDENTIFIER.matches(map.loading)) {
       buttonClasses.push('is-loading');
     }
@@ -125,7 +131,7 @@ export function createView() {
     return yo`
       <div class="u-marginBl">
         <div>
-          <strong style="color: red;">${ map.error && map.error.message }</strong>
+          <strong class="Form-error">${ map.error && map.error.message }</strong>
         </div>
         <div class="u-posRelative" onload=${ appear(() => dispatch(setDefaultWaypoints(FROM_IDENTIFIER.selector))) }>
           ${ output(Object.keys(route).length, () => yo`
@@ -146,11 +152,12 @@ export function createView() {
           `) }
           <form onsubmit=${ onsubmit }>
             <div class=${ itemClass }>
-              ${ input({outline, label: 'From', id: id('from'), error: (error && FROM_IDENTIFIER.matches(error.selector)), loading: FROM_IDENTIFIER.matches(map.loading), name: 'from', value: map.from, oninput, onblur, onfocus, onkeydown }) }
-            <div class=${ itemClass }>
+              ${ input({outline, label: 'From', id: id('from'), error: (map.error && FROM_IDENTIFIER.matches(map.error.selector)), loading: FROM_IDENTIFIER.matches(map.loading), name: 'from', value: map.from, oninput, onblur, onfocus, onkeydown }) }
             </div>
             <div class=${ itemClass }>
-              ${ input({outline, label: 'To', id: id('to'), error: (error && TO_IDENTIFIER.matches(error.selector)), loading: TO_IDENTIFIER.matches(map.loading), name: 'to', value: map.to, oninput, onblur, onfocus, onkeydown }) }
+              ${ input({outline, label: 'To', id: id('to'), error: (map.error && TO_IDENTIFIER.matches(map.error.selector)), loading: TO_IDENTIFIER.matches(map.loading), name: 'to', value: map.to, oninput, onblur, onfocus, onkeydown }) }
+            </div>
+            <div class=${ itemClass }>
               <button type="submit" disabled=${ !cansubmit } class=${ buttonClasses.join(' ') }>
                 Get going
               </button>

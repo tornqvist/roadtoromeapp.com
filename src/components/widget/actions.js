@@ -30,15 +30,16 @@ export function findWaypoint(text, name, sender) {
 
     dispatch(loading(sender));
 
-    return new Promise((resolve, reject) => {
-      client.geocodeForward(text, { types: 'place,region' }, (err, resp) => {
-        if (err) { return reject(dispatch(error(error, sender))); }
-        if (!resp.features.length) {
-          return reject(dispatch(error(new Error('No results found'), sender)));
-        }
-        resolve(dispatch(setWaypoint(resp.features[0], name)));
-      });
-    });
+    return client.geocodeForward(text, { types: 'place,region' })
+      .then(
+        resp => {
+          if (!resp.features.length) {
+            throw (new Error('No results found'));
+          }
+          return dispatch(setWaypoint(resp.features[0], name));
+        },
+        err => dispatch(error(err, sender))
+      );
   };
 }
 
@@ -54,18 +55,19 @@ export function findRoute(from, to, sender) {
 
     dispatch(loading(sender));
 
-    return new Promise((resolve, reject) => {
-      client.getDirections([
-        { latitude: fromLat, longitude: fromLong },
-        { latitude: toLat, longitude: toLong }
-      ], (err, resp) => {
-        if (err) { return reject(dispatch(error(err, sender))); }
+    return client.getDirections([
+      { latitude: fromLat, longitude: fromLong },
+      { latitude: toLat, longitude: toLong }
+    ])
+    .then(
+      resp => {
         if (!resp.routes.length) {
-          return reject(dispatch(error(new Error('Could not route!'), sender)));
+          throw (new Error('Could not route!'));
         }
-        resolve(dispatch(setRoute(resp.routes[0])));
-      });
-    });
+        return dispatch(setRoute(resp.routes[0]));
+      },
+      err => dispatch(error(err, sender))
+    );
   };
 }
 
@@ -89,47 +91,45 @@ export function setDefaultWaypoints(sender) {
     };
 
     return fetch(`//freegeoip.net/json/${ faux.EU/*window.CLIENT_IP*/ }`)
-      .then(resp => resp.json())
-      .catch(err => dispatch(error(err, sender)))
+      .then(resp => resp.json(), err => dispatch(error(err, sender)))
       .then(data => {
         const { latitude, longitude } = data;
         const continent = continents[data.country_code];
 
-        return new Promise((resolve, reject) => {
-          client.geocodeReverse(
-            { longitude, latitude },
-            { types: 'region' },
-            (err, resp) => {
-              if (err) { return reject(dispatch(error(error, sender))); }
-              if (!resp.features.length) {
-                return reject(
-                  dispatch(error(new Error('No results found'), sender))
-                );
-              }
-
-              const waypoint = resp.features[0];
-
-              /**
-               * Set the default destination for the origin continent
-               */
-
-              if (destinations[continent].length) {
-                const distance = getWaypointDistance(waypoint);
-                const destinationsByDistance = destinations[continent]
-                  .filter(destination => distance(destination) > 1000)
-                  .sort((a, b) => distance(a) < distance(b) ? 1 : -1);
-
-                dispatch(setWaypoint(destinationsByDistance[0], 'to'));
-              }
-
-              /**
-               * Set `from` waypoint
-               */
-
-              resolve(dispatch(setWaypoint(waypoint, 'from')));
+        return client.geocodeReverse(
+          { longitude, latitude },
+          { types: 'region' }
+        )
+        .then(
+          resp => {
+            if (!resp.features.length) {
+              throw (new Error('No results found'));
             }
-          );
-        });
+
+            const waypoint = resp.features[0];
+
+            /**
+             * Set the default destination for the origin continent
+             */
+
+            if (destinations[continent].length) {
+              const distance = getWaypointDistance(waypoint);
+              const destinationsByDistance = destinations[continent]
+                .filter(destination => distance(destination) > 1000)
+                .sort((a, b) => distance(a) < distance(b) ? 1 : -1);
+
+              dispatch(setWaypoint(destinationsByDistance[0], 'to'));
+            }
+
+            /**
+             * Set `from` waypoint
+             */
+
+            return dispatch(setWaypoint(waypoint, 'from'));
+          },
+          err => dispatch(error(err, sender))
+        )
+        .catch(err => dispatch(error(err, sender)));
       });
   };
 }
