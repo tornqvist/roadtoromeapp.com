@@ -13,6 +13,13 @@
   --sm-viewport: 320px;
   --md-viewport: 640px;
   --lg-viewport: 1400px;
+
+  --space-n: 0;
+  --space-b: .125rem;
+  --space-s: .25rem;
+  --space-m: 0.5rem;
+  --space-l: 1rem;
+  --space-g: 2rem;
 }
 
 @custom-media --sm-viewport (min-width:320px) and (max-width:640px);
