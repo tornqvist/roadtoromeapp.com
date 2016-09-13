@@ -5,10 +5,10 @@
   "scripts": {
     "test": "eslint ./ --ignore-pattern node_modules --ignore-pattern public",
     "build:js": "source .env && browserify src/main.js -t babelify -t yo-yoify -t [ babelify --plugins [ transform-es2015-template-literals ] ] -t envify > public/main.js",
-    "build:css": "postcss -u postcss-import -u postcss-custom-media src/main.css --map --output public/main.css",
+    "build:css": "postcss -u postcss-import -u postcss-custom-media -u autoprefixer src/main.css --map --output public/main.css",
     "build": "npm run build:js & npm run build:css",
-    "compress:js": "cat public/main.js | uglifyjs | gzip -9 -c > public/main.js.gz",
-    "compress:css": "cat public/main.css | csso | gzip -9 -c > public/main.css.gz",
+    "compress:js": "uglifyjs public/main.js --screw-ie8 -o public/main.js",
+    "compress:css": "csso public/main.css -o public/main.css",
     "compress": "npm run compress:js & npm run compress:css",
     "nodemon": "nodemon -w src -e css -x 'npm run build:css'",
     "watchify": "source .env && watchify src/main.js -d -o public/main.js -t babelify -t envify",
@@ -21,6 +21,7 @@
   "author": "Carl Törnqvist <calle.tornqvist@gmail.com>",
   "license": "UNLICENSED",
   "devDependencies": {
+    "autoprefixer": "^6.4.1",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
     "babel-preset-es2015": "^6.13.2",
     "babelify": "^7.3.0",
